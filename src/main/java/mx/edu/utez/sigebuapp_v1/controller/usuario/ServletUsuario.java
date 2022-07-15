@@ -1,4 +1,4 @@
-package mx.edu.utez.sigebuapp_v1.controller;
+package mx.edu.utez.sigebuapp_v1.controller.usuario;
 
 import mx.edu.utez.sigebuapp_v1.model.BeanUsuario;
 import mx.edu.utez.sigebuapp_v1.service.ServiceUsuario;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 @WebServlet(name = "ServletUsuario",
 urlPatterns = {
         "/get-usuarios",
@@ -33,15 +34,10 @@ public class ServletUsuario extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         action = request.getServletPath();
         logger.log(Level.INFO, "Path-> "+action);
-        String accion = request.getParameter("accion");
-        if (accion.equalsIgnoreCase("Listar")){
-            request.setAttribute("usuarios",serviceUsuario.getAll());
-            urlRedirect = "../webapp/views/sigebu/catalogoUsuarios.jsp";
-        }
-        switch (accion){
-            case "listar":
+        switch (action){
+            case "/get-usuarios":
                 request.setAttribute("usuarios",serviceUsuario.getAll());
-                urlRedirect = "../webapp/views/sigebu/catalogoUsuarios.jsp";
+                urlRedirect = "/views/sigebu/catalogoUsuarios.jsp";
                 break;
             case "/create-usuario":
                 urlRedirect = "/views/sigebu/registro.jsp";
@@ -52,7 +48,7 @@ public class ServletUsuario extends HttpServlet {
                 try{
                     BeanUsuario usuario = serviceUsuario.getUsuario(Integer.parseInt(id));
                     request.setAttribute("usuario", usuario);
-                    urlRedirect = "/views/sigebu/catalogoUsuarios.jsp";
+                    urlRedirect = "/views/sigebu/updateUsuario.jsp";
                 }catch (Exception e){
                     urlRedirect = "/get-usuarios";
                 }
@@ -95,6 +91,34 @@ public class ServletUsuario extends HttpServlet {
                         result.isResult()+"&message="+result.getMessage()
                         +"&status="+result.getStatus();
                 break;
+            case "/save-usuario":
+                String nombre2 = request.getParameter("nombre");
+                String apellidos2 = request.getParameter("apellidos");
+                String curp2 = request.getParameter("curp");
+                String matricula2 = request.getParameter("matricula");
+                String edad2 = request.getParameter("edad");
+                String tipo2 = request.getParameter("tipo");
+                String direccion2 = request.getParameter("direccion");
+                String email2 = request.getParameter("email");
+                String password2 = request.getParameter("password");
+                String id = request.getParameter("id");
+                BeanUsuario usuario2 = new BeanUsuario();
+                usuario2.setId(Integer.parseInt(id));
+                usuario2.setNombre(nombre2);
+                usuario2.setApellidos(apellidos2);
+                usuario2.setCurp(curp2);
+                usuario2.setMatricula(matricula2);
+                usuario2.setEdad(Integer.parseInt(edad2));
+                usuario2.setTipo(tipo2);
+                usuario2.setDireccion(direccion2);
+                usuario2.setEmail(email2);
+                usuario2.setPassword(password2);
+                ResultAction result2 = serviceUsuario.update(usuario2);
+                urlRedirect = "/get-usuarios?result="+
+                        result2.isResult()+"&message="+result2.getMessage()
+                        +"&status="+result2.getStatus();
+                break;
+
             default:
                 urlRedirect = "/get-usuarios";
                 break;
